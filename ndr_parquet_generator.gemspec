@@ -29,5 +29,6 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'ndr_dev_support', '>= 3.1.3'
+  spec.add_dependency 'ndr_import'
+  spec.add_dependency 'red-parquet'
 end
