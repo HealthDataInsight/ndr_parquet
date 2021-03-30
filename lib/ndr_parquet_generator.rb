@@ -5,7 +5,7 @@ require 'ndr_import/universal_importer_helper'
 require 'parquet'
 require_relative 'ndr_parquet_generator/version'
 
-# Reads file using NdrImport ETL logic and loads in Mongodb
+# Reads file using NdrImport ETL logic and creates parquet file(s)
 class NdrParquetGenerator
   include NdrImport::UniversalImporterHelper
 

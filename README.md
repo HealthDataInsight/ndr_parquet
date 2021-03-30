@@ -1,28 +1,35 @@
 # NdrParquetGenerator
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ndr_parquet_generator`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Based on [Ollie Tulloch](https://github.com/ollietulloch)'s boilerplate [NdrImport](https://github.com/PublicHealthEngland/ndr_import) driven MongoDB example, this generates parquet file(s) using [Apache Arrow](https://arrow.apache.org).
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ndr_parquet_generator'
+gem 'ndr_parquet_generator', git: 'https://github.com/timgentry/ndr_parquet_generator', branch: 'main'
 ```
 
 And then execute:
 
     $ bundle install
 
-Or install it yourself as:
-
-    $ gem install ndr_parquet_generator
-
 ## Usage
 
-TODO: Write usage instructions here
+Below is an example that extracts data from a PDF and transforms it into to a collection of records defined by their "klasses" and "fields":
+
+```ruby
+require 'ndr_parquet_generator'
+
+source_file = SafePath.new(...).join('ABC_Collection-June-2020_03.xlsm')
+table_mappings = SafePath.new(...).join('national_collection.yml')
+generator = NdrParquetGenerator.new(source_file, table_mappings)
+generator.load
+```
+
+See `test/ndr_parquet_generator_test.rb` for a more complete working example.
+
+More information on the workings of the mapper are available in the [wiki](https://github.com/PublicHealthEngland/ndr_import/wiki).
 
 ## Development
 
@@ -32,7 +39,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ndr_parquet_generator. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/ndr_parquet_generator/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/timgentry/ndr_parquet_generator. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/timgentry/ndr_parquet_generator/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -40,4 +47,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the NdrParquetGenerator project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/ndr_parquet_generator/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the NdrParquetGenerator project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/timgentry/ndr_parquet_generator/blob/main/CODE_OF_CONDUCT.md).
