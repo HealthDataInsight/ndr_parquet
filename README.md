@@ -16,7 +16,7 @@ And then execute:
 
 ## Usage
 
-Below is an example that extracts data from a PDF and transforms it into to a collection of records defined by their "klasses" and "fields":
+Below is an example that extracts data from a spreadsheet and transforms it into to a `raw` and `mapped` parquet files, defined by their `Hash` "klass":
 
 ```ruby
 require 'ndr_parquet_generator'
