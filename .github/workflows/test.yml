@@ -23,8 +23,11 @@ jobs:
         bundler-cache: true
 
   test:
+    runs-on: ubuntu-latest
+
     needs:
     - build
+
     steps:
     - name: Run the default task
       run: bundle exec rake
