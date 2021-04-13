@@ -1,6 +1,9 @@
 name: Test
 
-on: [push,pull_request]
+on:
+  push:
+  pull_request:
+    branches: [ master ]
 
 jobs:
   test:
@@ -20,6 +23,20 @@ jobs:
     - name: Set up Ruby + Bundle
       uses: ruby/setup-ruby@v1
       with:
+        ruby-version: 2.7.2
         bundler-cache: true
     - name: Run the default task
       run: bundle exec rake
+
+  bundle-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby + Bundle
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7.2
+        bundler-cache: true
+    - name: Audit the bundle
+      run: bundle exec bundle-audit check --update
