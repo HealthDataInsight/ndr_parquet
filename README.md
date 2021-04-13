@@ -1,4 +1,4 @@
-# NdrParquetGenerator
+# NdrParquetGenerator [![Build Status](https://github.com/timgentry/ndr_parquet_generator/workflows/Test/badge.svg)](https://github.com/timgentry/ndr_parquet_generator/actions?query=workflow%3Atest)
 
 Based on [Ollie Tulloch](https://github.com/ollietulloch)'s boilerplate [NdrImport](https://github.com/PublicHealthEngland/ndr_import) driven MongoDB example, this generates parquet file(s) using [Apache Arrow](https://arrow.apache.org).
 
