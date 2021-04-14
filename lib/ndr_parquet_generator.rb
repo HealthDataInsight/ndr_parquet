@@ -100,7 +100,7 @@ class NdrParquetGenerator
             field = mapping['field']
             arrow_data_type = mapping['arrow_data_type'] || :string
             if arrow_data_type == :list
-              field_types[klass][field] = mapping['arrow_list_field'].symbolize_keys
+              field_types[klass][field] = mapping.fetch('arrow_list_field').symbolize_keys
             else
               field_types[klass][field] = arrow_data_type
             end
