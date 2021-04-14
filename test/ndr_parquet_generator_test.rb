@@ -59,4 +59,22 @@ class NdrParquetGeneratorTest < Minitest::Test
     actual_schema = raw_table.schema.fields.map { |f| [f.name, f.data_type.name] }
     assert_equal expected_schema, actual_schema
   end
+
+  def test_a_tmpdir_output_path
+    assert_equal Dir.tmpdir, SafePath.new('tmpdir').to_s
+
+    Dir.mktmpdir do |dir|
+      source_file = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
+      table_mappings = @permanent_test_files.join('national_collection.yml')
+      output_path = Pathname.new(dir)
+
+      generator = NdrParquetGenerator.new(source_file, table_mappings, output_path)
+      generator.load
+
+      assert_equal [
+        output_path.join('ABC_Collection-June-2020_03.hash.mapped.parquet'),
+        output_path.join('ABC_Collection-June-2020_03.hash.raw.parquet')
+      ], generator.output_files
+    end
+  end
 end
