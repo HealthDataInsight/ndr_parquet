@@ -99,7 +99,11 @@ class NdrParquetGenerator
           column['mappings'].each do |mapping|
             field = mapping['field']
             arrow_data_type = mapping['arrow_data_type'] || :string
-            field_types[klass][field] = arrow_data_type
+            if arrow_data_type == :list
+              field_types[klass][field] = mapping['arrow_list_field'].symbolize_keys
+            else
+              field_types[klass][field] = arrow_data_type
+            end
           end
         end
       end
@@ -111,7 +115,13 @@ class NdrParquetGenerator
       schemas = {}
 
       arrow_field_types(table).each do |klass, field_type_hash|
-        field_array = field_type_hash.map { |fieldname, type| Arrow::Field.new(fieldname, type) }
+        field_array = field_type_hash.map do |fieldname, type|
+          if list_data_type?(type)
+            Arrow::Field.new(name: fieldname, type: :list, field: type.except(:split))
+          else
+            Arrow::Field.new(fieldname, type)
+          end
+        end
         schemas[klass] = Arrow::Schema.new(field_array)
       end
 
@@ -152,9 +162,15 @@ class NdrParquetGenerator
         ActiveRecord::Type::Boolean.new.cast(value)
       when :string
         value.to_s
+      when Hash
+        value.to_s.split(type[:split]) if list_data_type?(type)
       else
         raise "Unrecognised type: #{type.inspect}"
       end
+    end
+
+    def list_data_type?(type)
+      type.is_a?(Hash) && type[:split].present?
     end
 end
 
