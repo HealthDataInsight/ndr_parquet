@@ -2,19 +2,19 @@
 
 require 'test_helper'
 
-class NdrParquetGeneratorTest < Minitest::Test
+class GeneratorTest < Minitest::Test
   def setup
     @permanent_test_files = SafePath.new('permanent_test_files')
   end
 
   def test_that_it_has_a_version_number
-    refute_nil ::NdrParquetGenerator::VERSION
+    refute_nil ::NdrParquet::VERSION
   end
 
   def test_the_output_schemas
     source_file = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
     table_mappings = @permanent_test_files.join('national_collection.yml')
-    generator = NdrParquetGenerator.new(source_file, table_mappings)
+    generator = NdrParquet::Generator.new(source_file, table_mappings)
     generator.load
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
@@ -68,7 +68,7 @@ class NdrParquetGeneratorTest < Minitest::Test
       table_mappings = @permanent_test_files.join('national_collection.yml')
       output_path = Pathname.new(dir)
 
-      generator = NdrParquetGenerator.new(source_file, table_mappings, output_path)
+      generator = NdrParquet::Generator.new(source_file, table_mappings, output_path)
       generator.load
 
       assert_equal [

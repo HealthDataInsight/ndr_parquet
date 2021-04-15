@@ -11,7 +11,7 @@
   unzip_path:
     <<: *tmpdir
   permanent_test_files:
-    root: <%= NdrParquetGenerator.root + '/test/resources' %>
+    root: <%= NdrParquet.root + '/test/resources' %>
     prms:
       - r
       - w

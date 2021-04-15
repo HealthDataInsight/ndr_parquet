@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gem 'ndr_import', git: 'https://github.com/timgentry/ndr_import.git',
                   branch: 'feature/filename_column'
 
-# Specify your gem's dependencies in ndr_parquet_generator.gemspec
+# Specify your gem's dependencies in ndr_parquet.gemspec
 gemspec
 
 gem 'minitest', '~> 5.0'
