@@ -1,16 +1,15 @@
 <% require 'tmpdir' %>
 # This allows us different filesystem paths for different platforms
 --- 
-test_files: &test_files
-  root: <%= Dir.mktmpdir %>
-
 ? !ruby/regexp /.*/
 : 
-  unzip_path:
-    <<: *test_files
+  tmpdir: &tmpdir
+    root: <%= Dir.tmpdir %>
     prms:
       - r
       - w
+  unzip_path:
+    <<: *tmpdir
   permanent_test_files:
     root: <%= NdrParquetGenerator.root + '/test/resources' %>
     prms:

@@ -3,25 +3,30 @@
 require 'ndr_import'
 require 'ndr_import/universal_importer_helper'
 require 'parquet'
+require 'pathname'
 require_relative 'ndr_parquet_generator/version'
 
 # Reads file using NdrImport ETL logic and creates parquet file(s)
 class NdrParquetGenerator
   include NdrImport::UniversalImporterHelper
 
+  attr_reader :output_files
+
   def self.root
     ::File.expand_path('..', __dir__)
   end
 
-  def initialize(filename, table_mappings)
+  def initialize(filename, table_mappings, output_path = '')
     @filename = filename
     @table_mappings = YAML.load_file table_mappings
+    @output_path = Pathname.new(output_path)
 
     ensure_all_mappings_are_tables
   end
 
   def load
     record_count = 0
+    @output_files = []
     extract(@filename).each do |table, rows|
       arrow_fields = arrow_field_types(table)
       rawtext_column_names = rawtext_names(table)
@@ -56,7 +61,9 @@ class NdrParquetGenerator
       output_rows.each do |klass, records|
         # Save the mapped parquet file
         arrow_table = Arrow::Table.new(schemas[klass], records)
-        arrow_table.save("#{basename}.#{klass.underscore}.mapped.parquet")
+        output_filename = @output_path.join("#{basename}.#{klass.underscore}.mapped.parquet")
+        arrow_table.save(output_filename)
+        @output_files << output_filename
       end
 
       rawtext_rows.each do |klass, _records|
@@ -65,7 +72,9 @@ class NdrParquetGenerator
                                          Arrow::Field.new(fieldname, :string)
                                        end)
         raw_arrow_table = Arrow::Table.new(raw_schema, rawtext_rows[klass])
-        raw_arrow_table.save("#{basename}.#{klass.underscore}.raw.parquet")
+        output_filename = @output_path.join("#{basename}.#{klass.underscore}.raw.parquet")
+        raw_arrow_table.save(output_filename)
+        @output_files << output_filename
       end
     end
     # puts "Inserted #{record_count} records in total"
