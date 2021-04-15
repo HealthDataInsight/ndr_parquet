@@ -28,7 +28,11 @@
   - column: SQU03_6_2_2:N
     mappings:
     - field: SQU03_6_2_2
-      arrow_data_type: :int32
+      arrow_data_type: :list
+      arrow_list_field:
+        name: item
+        type: :string
+        split: ','
   - column: K1n:N
     mappings:
     - field: K1N

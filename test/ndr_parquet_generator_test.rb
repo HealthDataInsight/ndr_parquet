@@ -23,7 +23,7 @@ class NdrParquetGeneratorTest < Minitest::Test
       %w[SQU03_5_3_1 int32],
       %w[SQU03_5_3_2 int32],
       %w[SQU03_6_2_1 int32],
-      %w[SQU03_6_2_2 int32],
+      %w[SQU03_6_2_2 list],
       %w[K1N bool],
       %w[K1M utf8],
       %w[K150 utf8],
