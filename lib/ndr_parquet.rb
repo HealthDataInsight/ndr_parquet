@@ -3,8 +3,9 @@
 require 'ndr_parquet/generator'
 require 'ndr_parquet/version'
 
+# This exposes the root folder for filesystem paths
 module NdrParquet
   def self.root
-    ::File.expand_path('../..', __FILE__)
+    ::File.expand_path('..', __dir__)
   end
 end

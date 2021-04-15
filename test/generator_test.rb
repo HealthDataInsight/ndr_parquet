@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'fileutils'
 require 'test_helper'
 
 class GeneratorTest < Minitest::Test
@@ -7,11 +8,10 @@ class GeneratorTest < Minitest::Test
     @permanent_test_files = SafePath.new('permanent_test_files')
   end
 
-  def test_that_it_has_a_version_number
-    refute_nil ::NdrParquet::VERSION
-  end
-
   def test_the_output_schemas
+    FileUtils.rm 'ABC_Collection-June-2020_03.hash.mapped.parquet', force: true
+    FileUtils.rm 'ABC_Collection-June-2020_03.hash.raw.parquet', force: true
+
     source_file = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
     table_mappings = @permanent_test_files.join('national_collection.yml')
     generator = NdrParquet::Generator.new(source_file, table_mappings)

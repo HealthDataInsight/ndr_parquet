@@ -2,15 +2,16 @@
 
 require 'ndr_import'
 require 'ndr_import/universal_importer_helper'
+require 'ndr_parquet/type_casting'
+require 'ndr_parquet/generator/parquet_file_helper'
 require 'parquet'
 require 'pathname'
 
-# Reads file using NdrImport ETL logic and creates parquet file(s)
 module NdrParquet
+  # Reads file using NdrImport ETL logic and creates parquet file(s)
   class Generator
     include NdrImport::UniversalImporterHelper
-
-    attr_reader :output_files
+    include NdrParquet::Generator::ParquetFileHelper
 
     def initialize(filename, table_mappings, output_path = '')
       @filename = filename
@@ -22,7 +23,6 @@ module NdrParquet
 
     def load
       record_count = 0
-      @output_files = []
       extract(@filename).each do |table, rows|
         arrow_fields = arrow_field_types(table)
         rawtext_column_names = rawtext_names(table)
@@ -38,7 +38,7 @@ module NdrParquet
             output_rows[klass] ||= []
             row = arrow_fields[klass].map do |fieldname, type|
               value = fields[fieldname]
-              cast_to_arrow_datatype(value, type)
+              TypeCasting.cast_to_arrow_datatype(value, type)
             end
             output_rows[klass] << row
 
@@ -51,27 +51,8 @@ module NdrParquet
           record_count += records.count
         end
 
-        basename = File.basename(@filename, File.extname(@filename))
-        schemas = arrow_schemas(table)
-
-        output_rows.each do |klass, records|
-          # Save the mapped parquet file
-          arrow_table = Arrow::Table.new(schemas[klass], records)
-          output_filename = @output_path.join("#{basename}.#{klass.underscore}.mapped.parquet")
-          arrow_table.save(output_filename)
-          @output_files << output_filename
-        end
-
-        rawtext_rows.each do |klass, _records|
-          # Save the rawtext parquet file
-          raw_schema = Arrow::Schema.new(rawtext_column_names[klass].map do |fieldname|
-                                           Arrow::Field.new(fieldname, :string)
-                                         end)
-          raw_arrow_table = Arrow::Table.new(raw_schema, rawtext_rows[klass])
-          output_filename = @output_path.join("#{basename}.#{klass.underscore}.raw.parquet")
-          raw_arrow_table.save(output_filename)
-          @output_files << output_filename
-        end
+        save_mapped_parquet_files(output_rows, table)
+        save_raw_parquet_files(rawtext_rows, rawtext_column_names)
       end
       # puts "Inserted #{record_count} records in total"
     end
@@ -116,23 +97,6 @@ module NdrParquet
         field_types
       end
 
-      def arrow_schemas(table)
-        schemas = {}
-
-        arrow_field_types(table).each do |klass, field_type_hash|
-          field_array = field_type_hash.map do |fieldname, type|
-            if list_data_type?(type)
-              Arrow::Field.new(name: fieldname, type: :list, field: type.except(:split))
-            else
-              Arrow::Field.new(fieldname, type)
-            end
-          end
-          schemas[klass] = Arrow::Schema.new(field_array)
-        end
-
-        schemas
-      end
-
       def rawtext_names(table)
         names = {}
 
@@ -153,43 +117,5 @@ module NdrParquet
 
         names
       end
-
-      def cast_to_arrow_datatype(value, type)
-        return nil if value.nil?
-
-        # puts "value: " + value.inspect
-        # puts "type: " + type.inspect
-        # puts
-        case type
-        when :int32
-          Integer(value)
-        when :boolean
-          ActiveRecord::Type::Boolean.new.cast(value)
-        when :string
-          value.to_s
-        when Hash
-          value.to_s.split(type[:split]) if list_data_type?(type)
-        else
-          raise "Unrecognised type: #{type.inspect}"
-        end
-      end
-
-      def list_data_type?(type)
-        type.is_a?(Hash) && type[:split].present?
-      end
   end
 end
-
-# ActiveModel::Type::BigInteger
-# ActiveModel::Type::Binary
-# ActiveModel::Type::Boolean
-# Type::Date
-# Type::DateTime
-# ActiveModel::Type::Decimal
-# ActiveModel::Type::Float
-# ActiveModel::Type::Integer
-# ActiveModel::Type::ImmutableString
-# ActiveRecord::Type::Json
-# ActiveModel::Type::String
-# Type::Time
-# # ActiveModel::Type::Value
