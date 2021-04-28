@@ -30,5 +30,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'ndr_import'
+  spec.add_dependency 'rake' # rake is an uncaptured red-parquet dependency
   spec.add_dependency 'red-parquet'
 end
