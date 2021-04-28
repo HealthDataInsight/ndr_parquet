@@ -31,6 +31,28 @@ See `test/ndr_parquet_test.rb` for a more complete working example.
 
 More information on the workings of the mapper are available in the [wiki](https://github.com/PublicHealthEngland/ndr_import/wiki).
 
+## Type definitions
+
+Columns are always cast as strings in `raw` parquet files. To specify a column type in the `mapped` parquet files, add `arrow_data_type` to field mappings. For example:
+
+```yaml
+  - column: TotalNum
+    mappings:
+    - field: TOTAL_NUMBER
+      arrow_data_type: :int32
+```
+
+defines an integer `TOTAL_NUMBER` column in the `mapped` parquet files, with values cast appropriately for that type.
+
+Currently supported Arrow column types are:
+
+* :binary
+* :boolean
+* :date32
+* :int8, :int16, :int32, :int64 and :integer
+* :string [default]
+* :uint8, :uint16, :uint32 and :uint64
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
