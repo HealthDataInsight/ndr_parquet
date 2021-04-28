@@ -37,9 +37,10 @@
     mappings:
     - field: K1N
       arrow_data_type: :boolean
-  - column: K1m:N
+  - column: K1m:D
     mappings:
     - field: K1M
+      arrow_data_type: :date32
   - column: K150:N
     mappings:
     - field: K150

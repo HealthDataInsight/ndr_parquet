@@ -1,23 +1,78 @@
+require 'active_model/type'
+require 'active_record/type/unsigned_integer'
+
+# Supported types:
+# binary
+# boolean
+# date32
+# decimal
+# float
+# int8
+# int16
+# int32
+# int64
+# integer
+# string
+# time
+# uint8
+# uint16
+# uint32
+# uint64
+
+# Unsupported types:
+# date64
+# decimal128
+# decimal256
+# dense_union
+# dictionary
+# double
+# extension
+# fixed_size_binary
+# fixed_width
+# floating_point
+# large_binary
+# large_list
+# large_string
+# list
+# map
+# null
+# numeric
+# sparse_union
+# struct
+# time32
+# time64
+# timestamp
+# union
+
+ActiveModel::Type.register(:int8) { ActiveModel::Type::Integer.new(limit: 1) }
+ActiveModel::Type.register(:int16) { ActiveModel::Type::Integer.new(limit: 2) }
+ActiveModel::Type.register(:int32) { ActiveModel::Type::Integer.new(limit: 4) }
+ActiveModel::Type.register(:int64) { ActiveModel::Type::Integer.new(limit: 8) }
+
+ActiveModel::Type.register(:uint8) { ActiveRecord::Type::UnsignedInteger.new(limit: 1) }
+ActiveModel::Type.register(:uint16) { ActiveRecord::Type::UnsignedInteger.new(limit: 2) }
+ActiveModel::Type.register(:uint32) { ActiveRecord::Type::UnsignedInteger.new(limit: 4) }
+ActiveModel::Type.register(:uint64) { ActiveRecord::Type::UnsignedInteger.new(limit: 8) }
+
+ActiveModel::Type.register(:date32, ActiveModel::Type::Date)
+
 module NdrParquet
   # This mixin casts values to Apache Arrow field types
   class TypeCasting
     def self.cast_to_arrow_datatype(value, type)
       return nil if value.nil?
 
-      # puts "value: " + value.inspect
-      # puts "type: " + type.inspect
-      # puts
-      case type
-      when :int32
-        Integer(value)
-      when :boolean
-        ActiveRecord::Type::Boolean.new.cast(value)
-      when :string
-        value.to_s
-      when Hash
-        value.to_s.split(type[:split]) if list_data_type?(type)
-      else
-        raise "Unrecognised type: #{type.inspect}"
+      begin
+        ActiveModel::Type.lookup(type).cast(value)
+      rescue ArgumentError
+        case type
+        when :string
+          value.to_s
+        when Hash
+          value.to_s.split(type[:split]) if list_data_type?(type)
+        else
+          raise "Unrecognised type: #{type.inspect}"
+        end
       end
     end
 
@@ -27,14 +82,26 @@ module NdrParquet
   end
 end
 
+# BigInteger = ActiveModel::Type::BigInteger
+# Decimal = ActiveModel::Type::Decimal
+# Float = ActiveModel::Type::Float
+# String = ActiveModel::Type::String
+# Value = ActiveModel::Type::Value
+
+# register(:big_integer, Type::BigInteger, override: false)
+# register(:datetime, Type::DateTime, override: false)
+# register(:decimal, Type::Decimal, override: false)
+# register(:float, Type::Float, override: false)
+# register(:integer, Type::Integer, override: false)
+# register(:json, Type::Json, override: false)
+# register(:string, Type::String, override: false)
+# register(:text, Type::Text, override: false)
+# register(:time, Type::Time, override: false)
+
 # ActiveModel::Type::BigInteger
-# ActiveModel::Type::Binary
-# ActiveModel::Type::Boolean
-# Type::Date
 # Type::DateTime
 # ActiveModel::Type::Decimal
 # ActiveModel::Type::Float
-# ActiveModel::Type::Integer
 # ActiveModel::Type::ImmutableString
 # ActiveRecord::Type::Json
 # ActiveModel::Type::String
