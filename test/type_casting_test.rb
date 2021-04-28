@@ -40,6 +40,19 @@ class TypeCastingTest < Minitest::Test
     assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :string)
   end
 
+  def test_casting_to_list
+    assert_equal %w[1 2 3], NdrParquet::TypeCasting.cast_to_arrow_datatype('1;2;3', { split: ';' })
+    assert_empty NdrParquet::TypeCasting.cast_to_arrow_datatype('', { split: ';' })
+    assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, { split: ';' })
+  end
+
+  def test_casting_to_decimal
+    decimal_options = { precision: 3, scale: 1 }
+    assert NdrParquet::TypeCasting.cast_to_arrow_datatype('110.2', decimal_options).is_a? BigDecimal
+    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype('', decimal_options)
+    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, decimal_options)
+  end
+
   def test_casting_to_unknown_type
     assert_raises ArgumentError do
       NdrParquet::TypeCasting.cast_to_arrow_datatype('12', :unknown_type)

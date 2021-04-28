@@ -66,7 +66,12 @@ module NdrParquet
       # when :string
       #   value.to_s
       when Hash
-        value.to_s.split(type[:split]) if list_data_type?(type)
+        return value.to_s.split(type[:split]) if list_data_type?(type)
+
+        if decimal_data_type?(type)
+          decimal_options = type.except(:bits)
+          ActiveRecord::Type::Decimal.new(**decimal_options).cast(value)
+        end
       else
         ActiveModel::Type.lookup(type).cast(value)
       end
@@ -74,6 +79,10 @@ module NdrParquet
 
     def self.list_data_type?(type)
       type.is_a?(Hash) && type[:split].present?
+    end
+
+    def self.decimal_data_type?(type)
+      type.is_a?(Hash) && type[:precision].present? && type[:scale].present?
     end
   end
 end

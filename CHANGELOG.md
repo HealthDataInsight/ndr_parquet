@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ###Added:
 - Adopted the ActiveModel type register - supporting binary, date, integer and unsigned integer Arrow column types and casting.
+- Added support for decimal Arrow column types
 
 ## [0.1.0] - 2021-03-29
 

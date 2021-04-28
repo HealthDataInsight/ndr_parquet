@@ -23,6 +23,8 @@ module NdrParquet
             field_array = field_type_hash.map do |fieldname, type|
               if TypeCasting.list_data_type?(type)
                 Arrow::Field.new(name: fieldname, type: :list, field: type.except(:split))
+              elsif TypeCasting.decimal_data_type?(type)
+                Arrow::Field.new(name: fieldname, type: "decimal#{type[:bits]}".to_sym, **type)
               else
                 Arrow::Field.new(fieldname, type)
               end
