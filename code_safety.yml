@@ -1,0 +1,110 @@
+---
+file safety:
+  ".github/workflows/lint.yml":
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 88c0a2393107970d4f9101d4a715270999c7336f
+  ".github/workflows/test.yml":
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  ".gitignore":
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  ".rubocop.yml":
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 36c62b053857cde5f972bec058cdf60ae6086434
+  ".ruby-version":
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: df203c02ad806b1f535777bd48e8e45945e8aa86
+  CHANGELOG.md:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 8b67798a9e249ddd5849b15a06cb252d06174598
+  CODE_OF_CONDUCT.md:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 8b67798a9e249ddd5849b15a06cb252d06174598
+  Gemfile:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+  LICENSE.txt:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 8b67798a9e249ddd5849b15a06cb252d06174598
+  README.md:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+  Rakefile:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: fb0589cf294dc658af592cf320f8a52ca9ffb5ae
+  bin/console:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+  bin/setup:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  lib/ndr_parquet.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: ac7bf809cc6636e1a541c3ac5cdbe6dcc5a542aa
+  lib/ndr_parquet/generator.rb:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  lib/ndr_parquet/generator/parquet_file_helper.rb:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  lib/ndr_parquet/s3_wrapper.rb:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  lib/ndr_parquet/type_casting.rb:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  lib/ndr_parquet/version.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+  ndr_parquet.gemspec:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  test/generator_test.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+  test/resources/ABC_Collection-June-2020_03.xlsm:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  test/resources/filesystem_paths.yml:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+  test/resources/national_collection.yml:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: '0598bf4922ec433ff35db3e4359ad3103f4cb134'
+  test/test_helper.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+  test/type_casting_test.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+  test/version_test.rb:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
