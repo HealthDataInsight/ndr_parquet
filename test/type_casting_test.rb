@@ -22,6 +22,17 @@ class TypeCastingTest < Minitest::Test
     assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :boolean)
   end
 
+  def test_casting_to_date32
+    assert_equal Date.new(2021, 4, 28),
+                 NdrParquet::TypeCasting.cast_to_arrow_datatype('2021-04-28', :date32)
+    assert_equal Date.new(1970, 1, 1),
+                 NdrParquet::TypeCasting.cast_to_arrow_datatype('01/01/1970', :date32)
+    assert_equal Date.new(1959, 12, 31),
+                 NdrParquet::TypeCasting.cast_to_arrow_datatype('1959-12-31', :date32)
+
+    assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :date32)
+  end
+
   def test_casting_to_string
     assert_equal '34', NdrParquet::TypeCasting.cast_to_arrow_datatype('34', :string)
     assert_equal '35', NdrParquet::TypeCasting.cast_to_arrow_datatype(35, :string)
@@ -30,7 +41,7 @@ class TypeCastingTest < Minitest::Test
   end
 
   def test_casting_to_unknown_type
-    assert_raises StandardError do
+    assert_raises ArgumentError do
       NdrParquet::TypeCasting.cast_to_arrow_datatype('12', :unknown_type)
     end
 
