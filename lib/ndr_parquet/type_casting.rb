@@ -62,17 +62,13 @@ module NdrParquet
     def self.cast_to_arrow_datatype(value, type)
       return nil if value.nil?
 
-      begin
+      case type
+      # when :string
+      #   value.to_s
+      when Hash
+        value.to_s.split(type[:split]) if list_data_type?(type)
+      else
         ActiveModel::Type.lookup(type).cast(value)
-      rescue ArgumentError
-        case type
-        when :string
-          value.to_s
-        when Hash
-          value.to_s.split(type[:split]) if list_data_type?(type)
-        else
-          raise "Unrecognised type: #{type.inspect}"
-        end
       end
     end
 
