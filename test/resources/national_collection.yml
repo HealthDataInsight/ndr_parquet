@@ -24,12 +24,10 @@
   - column: SQU03_6_2_1:N
     mappings:
     - field: SQU03_6_2_1
-      arrow_data_type: :decimal
-      arrow_decimal_field:
+      arrow_data_type: :decimal256
+      arrow_decimal256_field:
         precision: 6
         scale: 4
-        limit:
-        bits: 256
   - column: SQU03_6_2_2:N
     mappings:
     - field: SQU03_6_2_2

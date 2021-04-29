@@ -6,12 +6,15 @@ require 'active_record/type/unsigned_integer'
 # boolean
 # date32
 # decimal
+# decimal128
+# decimal256
 # float
 # int8
 # int16
 # int32
 # int64
 # integer
+# list
 # string
 # time
 # uint8
@@ -21,8 +24,6 @@ require 'active_record/type/unsigned_integer'
 
 # Unsupported types:
 # date64
-# decimal128
-# decimal256
 # dense_union
 # dictionary
 # double
@@ -33,7 +34,6 @@ require 'active_record/type/unsigned_integer'
 # large_binary
 # large_list
 # large_string
-# list
 # map
 # null
 # numeric
@@ -69,7 +69,7 @@ module NdrParquet
         return value.to_s.split(type[:split]) if list_data_type?(type)
 
         if decimal_data_type?(type)
-          decimal_options = type.except(:bits)
+          decimal_options = type.except(:data_type)
           ActiveRecord::Type::Decimal.new(**decimal_options).cast(value)
         end
       else

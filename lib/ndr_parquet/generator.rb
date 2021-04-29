@@ -14,7 +14,7 @@ module NdrParquet
     include NdrParquet::Generator::ParquetFileHelper
 
     # Data types that will include additional config from the mappings
-    COMPLEX_DATA_TYPES = %i[decimal list].freeze
+    COMPLEX_DATA_TYPES = %i[decimal128 decimal256 list].freeze
 
     def initialize(filename, table_mappings, output_path = '')
       @filename = filename
@@ -88,17 +88,22 @@ module NdrParquet
             column['mappings'].each do |mapping|
               field = mapping['field']
               arrow_data_type = mapping['arrow_data_type'] || :string
-              if COMPLEX_DATA_TYPES.include? arrow_data_type
-                field_types[klass][field] =
-                  mapping.fetch("arrow_#{arrow_data_type}_field").symbolize_keys
-              else
-                field_types[klass][field] = arrow_data_type
-              end
+              field_types[klass][field] =
+                if COMPLEX_DATA_TYPES.include? arrow_data_type
+                  complex_arrow_data_type(mapping, arrow_data_type)
+                else
+                  arrow_data_type
+                end
             end
           end
         end
 
         field_types
+      end
+
+      def complex_arrow_data_type(mapping, arrow_data_type)
+        mapping.fetch("arrow_#{arrow_data_type}_field").
+          merge(data_type: arrow_data_type).symbolize_keys
       end
 
       def rawtext_names(table)
