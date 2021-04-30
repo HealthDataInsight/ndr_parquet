@@ -25,14 +25,14 @@
     mappings:
     - field: SQU03_6_2_1
       arrow_data_type: :decimal256
-      arrow_decimal256_field:
+      arrow_data_type_options:
         precision: 6
         scale: 4
   - column: SQU03_6_2_2:N
     mappings:
     - field: SQU03_6_2_2
       arrow_data_type: :list
-      arrow_list_field:
+      arrow_data_type_options:
         name: item
         type: :string
         split: ','

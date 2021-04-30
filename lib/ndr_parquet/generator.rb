@@ -102,8 +102,7 @@ module NdrParquet
       end
 
       def complex_arrow_data_type(mapping, arrow_data_type)
-        mapping.fetch("arrow_#{arrow_data_type}_field").
-          merge(data_type: arrow_data_type).symbolize_keys
+        mapping.fetch('arrow_data_type_options').merge(data_type: arrow_data_type).symbolize_keys
       end
 
       def rawtext_names(table)
