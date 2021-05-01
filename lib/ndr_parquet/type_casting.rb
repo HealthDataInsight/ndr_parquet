@@ -5,7 +5,6 @@ require 'active_record/type/unsigned_integer'
 # binary
 # boolean
 # date32
-# decimal
 # decimal128
 # decimal256
 # float
@@ -59,8 +58,13 @@ ActiveModel::Type.register(:date32, ActiveModel::Type::Date)
 module NdrParquet
   # This mixin casts values to Apache Arrow field types
   class TypeCasting
+    SUPPORTED_DATA_TYPES = %i[binary boolean date32 decimal128 decimal256 float int8 int16 int32
+                              int64 integer list string time uint8 uint16 uint32 uint64].freeze
+
     def self.cast_to_arrow_datatype(value, type)
       return nil if value.nil?
+
+      raise ArgumentError, "Unsupported data type: #{type}" if unsupported_type?(type)
 
       case type
       # when :string
@@ -83,6 +87,11 @@ module NdrParquet
 
     def self.decimal_data_type?(type)
       type.is_a?(Hash) && type[:precision].present? && type[:scale].present?
+    end
+
+    def self.unsupported_type?(type)
+      data_type = type.is_a?(Hash) ? type[:data_type] : type
+      SUPPORTED_DATA_TYPES.exclude?(data_type)
     end
   end
 end
