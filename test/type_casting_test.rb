@@ -60,12 +60,15 @@ class TypeCastingTest < Minitest::Test
     end
     assert_equal 'Unsupported data type: unknown_type', exception.message
 
+    exception = assert_raises ArgumentError do
+      NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :unknown_type)
+    end
+    assert_equal 'Unsupported data type: unknown_type', exception.message
+
     unknown_data_type_options = { precision: 3, scale: 1, data_type: :unknown_type }
     exception = assert_raises ArgumentError do
       NdrParquet::TypeCasting.cast_to_arrow_datatype('12', unknown_data_type_options)
     end
     assert_equal "Unsupported data type: #{unknown_data_type_options}", exception.message
-
-    assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :unknown_type)
   end
 end

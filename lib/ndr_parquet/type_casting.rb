@@ -23,6 +23,7 @@ require 'active_record/type/unsigned_integer'
 
 # Unsupported types:
 # date64
+# decimal
 # dense_union
 # dictionary
 # double
@@ -62,9 +63,9 @@ module NdrParquet
                               int64 integer list string time uint8 uint16 uint32 uint64].freeze
 
     def self.cast_to_arrow_datatype(value, type)
-      return nil if value.nil?
-
       raise ArgumentError, "Unsupported data type: #{type}" if unsupported_type?(type)
+
+      return nil if value.nil?
 
       case type
       # when :string
