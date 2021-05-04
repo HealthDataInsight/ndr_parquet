@@ -4,3 +4,6 @@ require: rubocop-minitest
 
 Layout/IndentationConsistency:
   EnforcedStyle: indented_internal_methods
+
+Minitest/MultipleAssertions:
+  Max: 10
