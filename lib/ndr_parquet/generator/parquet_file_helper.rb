@@ -50,18 +50,22 @@ module NdrParquet
           end
         end
 
-        def save_raw_parquet_files(rawtext_rows, rawtext_column_names)
-          rawtext_rows.each do |klass, _records|
+        def save_raw_parquet_files(rawtexts)
+          rawtexts.each do |klass, rawtext_hashes|
             # Save the rawtext parquet file
-            raw_schema = Arrow::Schema.new(
-              rawtext_column_names[klass].map do |fieldname|
+            schema = Arrow::Schema.new(
+              @rawtext_column_names[klass].to_a.map do |fieldname|
                 Arrow::Field.new(fieldname, :string)
               end
             )
-            raw_arrow_table = Arrow::Table.new(raw_schema, rawtext_rows[klass])
+            rows = rawtext_hashes.map do |rawtext_hash|
+              @rawtext_column_names[klass].to_a.map { |fieldname| rawtext_hash[fieldname] }
+            end
 
+            raw_arrow_table = Arrow::Table.new(schema, rows)
             output_filename = parquet_filename(klass, :raw)
             raw_arrow_table.save(output_filename)
+
             @output_files ||= []
             @output_files << output_filename
           end

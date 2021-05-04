@@ -14,7 +14,7 @@ class GeneratorTest < Minitest::Test
   end
 
   def test_the_output_schemas
-    generate_parquet
+    generate_parquet('ABC_Collection-June-2020_03.xlsm', 'national_collection.yml')
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
     expected_schema = [
@@ -78,7 +78,7 @@ class GeneratorTest < Minitest::Test
   end
 
   def test_complex_data_types
-    generate_parquet
+    generate_parquet('ABC_Collection-June-2020_03.xlsm', 'national_collection.yml')
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
     raw_table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.raw.parquet')
@@ -94,10 +94,9 @@ class GeneratorTest < Minitest::Test
 
   private
 
-    def generate_parquet
-      source_file    = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
-      table_mappings = @permanent_test_files.join('national_collection.yml')
-      generator      = NdrParquet::Generator.new(source_file, table_mappings)
+    def generate_parquet(source_file, table_mappings)
+      generator = NdrParquet::Generator.new(@permanent_test_files.join(source_file),
+                                            @permanent_test_files.join(table_mappings))
       generator.load
     end
 end

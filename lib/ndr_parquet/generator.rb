@@ -20,17 +20,19 @@ module NdrParquet
       @filename = filename
       @table_mappings = YAML.load_file table_mappings
       @output_path = Pathname.new(output_path)
+      @rawtext_column_names = {}
 
       ensure_all_mappings_are_tables
     end
 
     def load
       record_count = 0
+      rawtext_hashes = {}
+
       extract(@filename).each do |table, rows|
         arrow_fields = arrow_field_types(table)
-        rawtext_column_names = rawtext_names(table)
+        capture_all_rawtext_names(table)
         output_rows = {}
-        rawtext_rows = {}
 
         table.transform(rows).each_slice(50) do |records|
           records.each do |(instance, fields, _index)|
@@ -45,18 +47,16 @@ module NdrParquet
             end
             output_rows[klass] << row
 
-            rawtext_rows[klass] ||= []
-            rawtext_row = rawtext_column_names[klass].map do |rawtext_column_name|
-              fields[:rawtext][rawtext_column_name]
-            end
-            rawtext_rows[klass] << rawtext_row
+            rawtext_hashes[klass] ||= []
+            rawtext_hashes[klass] << fields[:rawtext]
           end
           record_count += records.count
         end
 
         save_mapped_parquet_files(output_rows, table)
-        save_raw_parquet_files(rawtext_rows, rawtext_column_names)
       end
+
+      save_raw_parquet_files(rawtext_hashes)
       # puts "Inserted #{record_count} records in total"
     end
 
@@ -105,25 +105,21 @@ module NdrParquet
         mapping.fetch('arrow_data_type_options').merge(data_type: arrow_data_type).symbolize_keys
       end
 
-      def rawtext_names(table)
-        names = {}
-
+      def capture_all_rawtext_names(table)
         masked_mappings = table.send(:masked_mappings)
         masked_mappings.each do |instance, columns|
           klass = instance.split('#').first
 
-          names[klass] ||= []
+          @rawtext_column_names[klass] ||= Set.new
           columns.each do |column|
             rawtext_column_name = column[NdrImport::Mapper::Strings::RAWTEXT_NAME] ||
                                   column[NdrImport::Mapper::Strings::COLUMN]
 
             next if rawtext_column_name.nil?
 
-            names[klass] << rawtext_column_name.downcase
+            @rawtext_column_names[klass] << rawtext_column_name.downcase
           end
         end
-
-        names
       end
   end
 end
