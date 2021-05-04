@@ -92,6 +92,26 @@ class GeneratorTest < Minitest::Test
     assert_equal '14a,14b,14c', raw_table.find_column('squ03_6_2_2:n').first
   end
 
+  def test_cross_worksheet_klass
+    generate_parquet('cross_worksheet_spreadsheet.xlsx', 'cross_worksheet_mapping.yml')
+
+    raw_table = Arrow::Table.load('cross_worksheet_spreadsheet.hash.raw.parquet')
+    expected_schema = [
+      %w[common1 utf8],
+      %w[common2 utf8],
+      %w[sheet1_first utf8],
+      %w[sheet1_second utf8],
+      %w[sheet2_third utf8]
+    ]
+    actual_schema = raw_table.schema.fields.map { |f| [f.name, f.data_type.name] }
+    assert_equal expected_schema, actual_schema
+    assert_equal %w[Sheet1_2A_Common Sheet1_2A_Common Sheet1_3A_Common Sheet1_3A_Common
+                    Sheet2_2A_Common Sheet2_3A_Common Sheet2_4A_Common],
+                 raw_table.columns.first.data.to_a
+    assert_equal [nil, nil, nil, nil, 'Sheet2_2C_Third', 'Sheet2_3C_Third', 'Sheet2_4C_Third'],
+                 raw_table.columns.last.data.to_a
+  end
+
   private
 
     def generate_parquet(source_file, table_mappings)
