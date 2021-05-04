@@ -64,10 +64,17 @@ module NdrParquet
 
       def get_notifier(_value); end
 
-      def capture_all_arrow_column_types(table)
+      def each_masked_mapping(table)
         masked_mappings = table.send(:masked_mappings)
         masked_mappings.each do |instance, columns|
           klass = instance.split('#').first
+
+          yield klass, columns
+        end
+      end
+
+      def capture_all_arrow_column_types(table)
+        each_masked_mapping(table) do |klass, columns|
           @arrow_column_types[klass] ||= {}
 
           columns.each do |column|
@@ -76,27 +83,29 @@ module NdrParquet
             column['mappings'].each do |mapping|
               field = mapping['field']
 
-              definition = {
+              column_definition = {
                 type: mapping['arrow_data_type'] || :string,
                 options: mapping['arrow_data_type_options']&.symbolize_keys!
               }
-              if @arrow_column_types[klass].include?(field)
-                # Check definitions are the same
-                if @arrow_column_types[klass][field] != definition
-                  raise "Different Arrow column type definitions for #{field}"
-                end
-              else
-                @arrow_column_types[klass][field] = definition
-              end
+              add_or_compare_column_definition(klass, field, column_definition)
             end
           end
         end
       end
 
+      def add_or_compare_column_definition(klass, field, definition)
+        if @arrow_column_types[klass].include?(field)
+          # Check definitions are the same
+          if @arrow_column_types[klass][field] != definition
+            raise "Different Arrow column type definitions for #{field}"
+          end
+        else
+          @arrow_column_types[klass][field] = definition
+        end
+      end
+
       def capture_all_rawtext_names(table)
-        masked_mappings = table.send(:masked_mappings)
-        masked_mappings.each do |instance, columns|
-          klass = instance.split('#').first
+        each_masked_mapping(table) do |klass, columns|
           @rawtext_column_names[klass] ||= Set.new
 
           columns.each do |column|
