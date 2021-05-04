@@ -15,7 +15,7 @@ file safety:
   ".rubocop.yml":
     comments: 
     reviewed_by: timgentry
-    safe_revision: 36c62b053857cde5f972bec058cdf60ae6086434
+    safe_revision: ddf91127199f58b9ec30134a21a73e4f82304038
   ".ruby-version":
     comments: 
     reviewed_by: timgentry
@@ -23,7 +23,7 @@ file safety:
   CHANGELOG.md:
     comments: 
     reviewed_by: timgentry
-    safe_revision: 8b67798a9e249ddd5849b15a06cb252d06174598
+    safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
   CODE_OF_CONDUCT.md:
     comments: 
     reviewed_by: timgentry
@@ -39,7 +39,7 @@ file safety:
   README.md:
     comments: 
     reviewed_by: timgentry
-    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+    safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
   Rakefile:
     comments: 
     reviewed_by: timgentry
@@ -83,8 +83,16 @@ file safety:
   test/generator_test.rb:
     comments: 
     reviewed_by: timgentry
-    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+    safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
   test/resources/ABC_Collection-June-2020_03.xlsm:
+    comments: 
+    reviewed_by: 
+    safe_revision: 
+  test/resources/cross_worksheet_mapping.yml:
+    comments: 
+    reviewed_by: timgentry
+    safe_revision: e7d3056fe0f04470a2c8b25d9d3228fa510a6608
+  test/resources/cross_worksheet_spreadsheet.xlsx:
     comments: 
     reviewed_by: 
     safe_revision: 
@@ -95,7 +103,7 @@ file safety:
   test/resources/national_collection.yml:
     comments: 
     reviewed_by: timgentry
-    safe_revision: '0598bf4922ec433ff35db3e4359ad3103f4cb134'
+    safe_revision: 24809b3bef5e6090640ccac15a710008219fcf4b
   test/test_helper.rb:
     comments: 
     reviewed_by: timgentry
@@ -103,7 +111,7 @@ file safety:
   test/type_casting_test.rb:
     comments: 
     reviewed_by: timgentry
-    safe_revision: b26588a9dd4e1500c85240bbd549955f97281c00
+    safe_revision: e7d3056fe0f04470a2c8b25d9d3228fa510a6608
   test/version_test.rb:
     comments: 
     reviewed_by: timgentry
