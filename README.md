@@ -49,6 +49,7 @@ Currently supported Arrow column types are:
 * :binary
 * :boolean
 * :date32
+* :decimal128, :decimal256
 * :int8, :int16, :int32, :int64 and :integer
 * :string [default]
 * :uint8, :uint16, :uint32 and :uint64

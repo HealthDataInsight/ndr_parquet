@@ -1,27 +1,9 @@
 require 'active_model/type'
 require 'active_record/type/unsigned_integer'
 
-# Supported types:
-# binary
-# boolean
-# date32
-# decimal128
-# decimal256
-# float
-# int8
-# int16
-# int32
-# int64
-# integer
-# list
-# string
-# time
-# uint8
-# uint16
-# uint32
-# uint64
+# See the README for supported Arrow column types.
 
-# Unsupported types:
+# Unsupported/untested types:
 # date64
 # decimal
 # dense_union
@@ -30,6 +12,7 @@ require 'active_record/type/unsigned_integer'
 # extension
 # fixed_size_binary
 # fixed_width
+# float
 # floating_point
 # large_binary
 # large_list
@@ -39,6 +22,7 @@ require 'active_record/type/unsigned_integer'
 # numeric
 # sparse_union
 # struct
+# time
 # time32
 # time64
 # timestamp
@@ -59,8 +43,8 @@ ActiveModel::Type.register(:date32, ActiveModel::Type::Date)
 module NdrParquet
   # This mixin casts values to Apache Arrow field types
   class TypeCasting
-    SUPPORTED_DATA_TYPES = %i[binary boolean date32 decimal128 decimal256 float int8 int16 int32
-                              int64 integer list string time uint8 uint16 uint32 uint64].freeze
+    SUPPORTED_DATA_TYPES = %i[binary boolean date32 decimal128 decimal256 int8 int16 int32
+                              int64 integer list string uint8 uint16 uint32 uint64].freeze
 
     def self.cast_to_arrow_datatype(value, type)
       raise ArgumentError, "Unsupported data type: #{type}" if unsupported_type?(type)
