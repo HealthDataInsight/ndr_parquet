@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed:
 - "klasses" that are used across table now work as expected. The "klass" parquet contains data from all relevant tables, not just the last.
+- `generator.output_files` now includes the total row count as well as the generated file path
 
 ## [0.1.0] - 2021-03-29
 

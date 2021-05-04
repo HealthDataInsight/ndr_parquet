@@ -10,10 +10,10 @@ module NdrParquet
 
       private
 
-        def parquet_filename(klass, type)
+        def parquet_filename(klass, mode)
           basename = File.basename(@filename, File.extname(@filename))
 
-          @output_path.join("#{basename}.#{klass.underscore}.#{type}.parquet")
+          @output_path.join("#{basename}.#{klass.underscore}.#{mode}.parquet")
         end
 
         def mapped_arrow_schema(klass)
@@ -48,12 +48,7 @@ module NdrParquet
               end
             end
 
-            arrow_table = Arrow::Table.new(schema, rows)
-            output_filename = parquet_filename(klass, :mapped)
-            arrow_table.save(output_filename)
-
-            @output_files ||= []
-            @output_files << output_filename
+            save_and_log_parquet_file(klass, schema, rows, :mapped)
           end
         end
 
@@ -69,13 +64,20 @@ module NdrParquet
               @rawtext_column_names[klass].to_a.map { |fieldname| rawtext_hash[fieldname] }
             end
 
-            raw_arrow_table = Arrow::Table.new(schema, rows)
-            output_filename = parquet_filename(klass, :raw)
-            raw_arrow_table.save(output_filename)
-
-            @output_files ||= []
-            @output_files << output_filename
+            save_and_log_parquet_file(klass, schema, rows, :raw)
           end
+        end
+
+        def save_and_log_parquet_file(klass, schema, rows, mode)
+          arrow_table = Arrow::Table.new(schema, rows)
+          output_filename = parquet_filename(klass, mode)
+          arrow_table.save(output_filename)
+
+          @output_files ||= []
+          @output_files << {
+            path: output_filename,
+            total_rows: rows.length
+          }
         end
     end
   end

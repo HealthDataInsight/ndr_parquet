@@ -71,8 +71,14 @@ class GeneratorTest < Minitest::Test
       generator.load
 
       assert_equal [
-        output_path.join('ABC_Collection-June-2020_03.hash.mapped.parquet'),
-        output_path.join('ABC_Collection-June-2020_03.hash.raw.parquet')
+        {
+          path: output_path.join('ABC_Collection-June-2020_03.hash.mapped.parquet'),
+          total_rows: 1
+        },
+        {
+          path: output_path.join('ABC_Collection-June-2020_03.hash.raw.parquet'),
+          total_rows: 1
+        }
       ], generator.output_files
     end
   end
