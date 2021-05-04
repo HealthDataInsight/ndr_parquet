@@ -8,24 +8,23 @@ class GeneratorTest < Minitest::Test
     @permanent_test_files = SafePath.new('permanent_test_files')
   end
 
-  def test_the_output_schemas
+  def teardown
     FileUtils.rm 'ABC_Collection-June-2020_03.hash.mapped.parquet', force: true
     FileUtils.rm 'ABC_Collection-June-2020_03.hash.raw.parquet', force: true
+  end
 
-    source_file = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
-    table_mappings = @permanent_test_files.join('national_collection.yml')
-    generator = NdrParquet::Generator.new(source_file, table_mappings)
-    generator.load
+  def test_the_output_schemas
+    generate_parquet
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
     expected_schema = [
       %w[providercode utf8],
       %w[SQU03_5_3_1 int32],
       %w[SQU03_5_3_2 int32],
-      %w[SQU03_6_2_1 int32],
+      %w[SQU03_6_2_1 decimal],
       %w[SQU03_6_2_2 list],
       %w[K1N bool],
-      %w[K1M utf8],
+      %w[K1M date32],
       %w[K150 utf8],
       %w[K190 utf8],
       %w[F1N utf8],
@@ -46,7 +45,7 @@ class GeneratorTest < Minitest::Test
       ['squ03_6_2_1:n', 'utf8'],
       ['squ03_6_2_2:n', 'utf8'],
       ['k1n:n', 'utf8'],
-      ['k1m:n', 'utf8'],
+      ['k1m:d', 'utf8'],
       ['k150:n', 'utf8'],
       ['k190:n', 'utf8'],
       ['f1n:n', 'utf8'],
@@ -77,4 +76,28 @@ class GeneratorTest < Minitest::Test
       ], generator.output_files
     end
   end
+
+  def test_complex_data_types
+    generate_parquet
+
+    table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
+    raw_table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.raw.parquet')
+
+    # :decimal256 data type
+    assert_kind_of BigDecimal, table.find_column('SQU03_6_2_1').first
+    assert_equal '13.2134', raw_table.find_column('squ03_6_2_1:n').first
+
+    # :list data type
+    assert_equal %w[14a 14b 14c], table.find_column('SQU03_6_2_2').first.to_a
+    assert_equal '14a,14b,14c', raw_table.find_column('squ03_6_2_2:n').first
+  end
+
+  private
+
+    def generate_parquet
+      source_file    = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
+      table_mappings = @permanent_test_files.join('national_collection.yml')
+      generator      = NdrParquet::Generator.new(source_file, table_mappings)
+      generator.load
+    end
 end

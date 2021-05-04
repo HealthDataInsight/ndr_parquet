@@ -22,7 +22,10 @@ module NdrParquet
           arrow_field_types(table).each do |klass, field_type_hash|
             field_array = field_type_hash.map do |fieldname, type|
               if TypeCasting.list_data_type?(type)
-                Arrow::Field.new(name: fieldname, type: :list, field: type.except(:split))
+                list_field_type = type.except(:data_type, :split)
+                Arrow::Field.new(name: fieldname, type: :list, field: list_field_type)
+              elsif TypeCasting.decimal_data_type?(type)
+                Arrow::Field.new(name: fieldname, type: type[:data_type], **type.except(:data_type))
               else
                 Arrow::Field.new(fieldname, type)
               end

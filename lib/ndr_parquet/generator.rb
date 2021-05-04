@@ -13,6 +13,9 @@ module NdrParquet
     include NdrImport::UniversalImporterHelper
     include NdrParquet::Generator::ParquetFileHelper
 
+    # Data types that will include additional config from the mappings
+    COMPLEX_DATA_TYPES = %i[decimal128 decimal256 list].freeze
+
     def initialize(filename, table_mappings, output_path = '')
       @filename = filename
       @table_mappings = YAML.load_file table_mappings
@@ -85,16 +88,21 @@ module NdrParquet
             column['mappings'].each do |mapping|
               field = mapping['field']
               arrow_data_type = mapping['arrow_data_type'] || :string
-              if arrow_data_type == :list
-                field_types[klass][field] = mapping.fetch('arrow_list_field').symbolize_keys
-              else
-                field_types[klass][field] = arrow_data_type
-              end
+              field_types[klass][field] =
+                if COMPLEX_DATA_TYPES.include? arrow_data_type
+                  complex_arrow_data_type(mapping, arrow_data_type)
+                else
+                  arrow_data_type
+                end
             end
           end
         end
 
         field_types
+      end
+
+      def complex_arrow_data_type(mapping, arrow_data_type)
+        mapping.fetch('arrow_data_type_options').merge(data_type: arrow_data_type).symbolize_keys
       end
 
       def rawtext_names(table)
