@@ -60,35 +60,5 @@ module NdrParquet
         ActiveModel::Type.lookup(type).cast(value)
       end
     end
-
-    def self.decimal_data_type?(type)
-      type.is_a?(Hash) && type[:precision].present? && type[:scale].present?
-    end
   end
 end
-
-# BigInteger = ActiveModel::Type::BigInteger
-# Decimal = ActiveModel::Type::Decimal
-# Float = ActiveModel::Type::Float
-# String = ActiveModel::Type::String
-# Value = ActiveModel::Type::Value
-
-# register(:big_integer, Type::BigInteger, override: false)
-# register(:datetime, Type::DateTime, override: false)
-# register(:decimal, Type::Decimal, override: false)
-# register(:float, Type::Float, override: false)
-# register(:integer, Type::Integer, override: false)
-# register(:json, Type::Json, override: false)
-# register(:string, Type::String, override: false)
-# register(:text, Type::Text, override: false)
-# register(:time, Type::Time, override: false)
-
-# ActiveModel::Type::BigInteger
-# Type::DateTime
-# ActiveModel::Type::Decimal
-# ActiveModel::Type::Float
-# ActiveModel::Type::ImmutableString
-# ActiveRecord::Type::Json
-# ActiveModel::Type::String
-# Type::Time
-# # ActiveModel::Type::Value
