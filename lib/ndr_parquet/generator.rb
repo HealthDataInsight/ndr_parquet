@@ -23,7 +23,7 @@ module NdrParquet
       ensure_all_mappings_are_tables
     end
 
-    def load
+    def process
       mapped_hashes = {}
       rawtext_hashes = {}
 

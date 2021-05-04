@@ -68,7 +68,7 @@ class GeneratorTest < Minitest::Test
       output_path = Pathname.new(dir)
 
       generator = NdrParquet::Generator.new(source_file, table_mappings, output_path)
-      generator.load
+      generator.process
 
       assert_equal [
         {
@@ -135,6 +135,6 @@ class GeneratorTest < Minitest::Test
     def generate_parquet(source_file, table_mappings)
       generator = NdrParquet::Generator.new(@permanent_test_files.join(source_file),
                                             @permanent_test_files.join(table_mappings))
-      generator.load
+      generator.process
     end
 end

@@ -24,7 +24,7 @@ require 'ndr_parquet'
 source_file = SafePath.new(...).join('ABC_Collection-June-2020_03.xlsm')
 table_mappings = SafePath.new(...).join('national_collection.yml')
 generator = NdrParquet::Generator.new(source_file, table_mappings)
-generator.load
+generator.process
 ```
 
 See `test/ndr_parquet_test.rb` for a more complete working example.
