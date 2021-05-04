@@ -46,37 +46,23 @@ module NdrParquet
     SUPPORTED_DATA_TYPES = %i[binary boolean date32 decimal128 decimal256 int8 int16 int32
                               int64 integer list string uint8 uint16 uint32 uint64].freeze
 
-    def self.cast_to_arrow_datatype(value, type)
-      raise ArgumentError, "Unsupported data type: #{type}" if unsupported_type?(type)
+    def self.cast_to_arrow_datatype(value, type, options = {})
+      raise ArgumentError, "Unsupported data type: #{type}" if SUPPORTED_DATA_TYPES.exclude?(type)
 
       return nil if value.nil?
 
       case type
-      # when :string
-      #   value.to_s
-      when Hash
-        return value.to_s.split(type[:split]) if list_data_type?(type)
-
-        if decimal_data_type?(type)
-          decimal_options = type.except(:data_type)
-          ActiveRecord::Type::Decimal.new(**decimal_options).cast(value)
-        end
+      when :decimal128, :decimal256
+        ActiveRecord::Type::Decimal.new(**options).cast(value)
+      when :list
+        value.to_s.split(options.fetch(:split))
       else
         ActiveModel::Type.lookup(type).cast(value)
       end
     end
 
-    def self.list_data_type?(type)
-      type.is_a?(Hash) && type[:split].present?
-    end
-
     def self.decimal_data_type?(type)
       type.is_a?(Hash) && type[:precision].present? && type[:scale].present?
-    end
-
-    def self.unsupported_type?(type)
-      data_type = type.is_a?(Hash) ? type[:data_type] : type
-      SUPPORTED_DATA_TYPES.exclude?(data_type)
     end
   end
 end
