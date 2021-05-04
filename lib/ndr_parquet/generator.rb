@@ -13,51 +13,37 @@ module NdrParquet
     include NdrImport::UniversalImporterHelper
     include NdrParquet::Generator::ParquetFileHelper
 
-    # Data types that will include additional config from the mappings
-    COMPLEX_DATA_TYPES = %i[decimal128 decimal256 list].freeze
-
     def initialize(filename, table_mappings, output_path = '')
       @filename = filename
       @table_mappings = YAML.load_file table_mappings
       @output_path = Pathname.new(output_path)
+      @rawtext_column_names = {}
+      @arrow_column_types = {}
 
       ensure_all_mappings_are_tables
     end
 
     def load
-      record_count = 0
+      mapped_hashes = {}
+      rawtext_hashes = {}
+
       extract(@filename).each do |table, rows|
-        arrow_fields = arrow_field_types(table)
-        rawtext_column_names = rawtext_names(table)
-        output_rows = {}
-        rawtext_rows = {}
+        capture_all_rawtext_names(table)
+        capture_all_arrow_column_types(table)
 
-        table.transform(rows).each_slice(50) do |records|
-          records.each do |(instance, fields, _index)|
-            klass = instance.split('#').first
+        table.transform(rows).each do |instance, fields, _index|
+          klass = instance.split('#').first
 
-            # Convert the fields to an Arrow table "row", with appropriate casting.
-            # Unfortunately, Arrow can't do it implicitly.
-            output_rows[klass] ||= []
-            row = arrow_fields[klass].map do |fieldname, type|
-              value = fields[fieldname]
-              TypeCasting.cast_to_arrow_datatype(value, type)
-            end
-            output_rows[klass] << row
+          mapped_hashes[klass] ||= []
+          mapped_hashes[klass] << fields.except(:rawtext)
 
-            rawtext_rows[klass] ||= []
-            rawtext_row = rawtext_column_names[klass].map do |rawtext_column_name|
-              fields[:rawtext][rawtext_column_name]
-            end
-            rawtext_rows[klass] << rawtext_row
-          end
-          record_count += records.count
+          rawtext_hashes[klass] ||= []
+          rawtext_hashes[klass] << fields[:rawtext]
         end
-
-        save_mapped_parquet_files(output_rows, table)
-        save_raw_parquet_files(rawtext_rows, rawtext_column_names)
       end
-      # puts "Inserted #{record_count} records in total"
+
+      save_mapped_parquet_files(mapped_hashes)
+      save_raw_parquet_files(rawtext_hashes)
     end
 
     private
@@ -74,56 +60,59 @@ module NdrParquet
 
       def get_notifier(_value); end
 
-      def arrow_field_types(table)
-        field_types = {}
-
+      def each_masked_mapping(table)
         masked_mappings = table.send(:masked_mappings)
         masked_mappings.each do |instance, columns|
           klass = instance.split('#').first
-          field_types[klass] ||= {}
+
+          yield klass, columns
+        end
+      end
+
+      def capture_all_arrow_column_types(table)
+        each_masked_mapping(table) do |klass, columns|
+          @arrow_column_types[klass] ||= {}
 
           columns.each do |column|
             next if column['mappings'].nil? || column['mappings'] == []
 
             column['mappings'].each do |mapping|
               field = mapping['field']
-              arrow_data_type = mapping['arrow_data_type'] || :string
-              field_types[klass][field] =
-                if COMPLEX_DATA_TYPES.include? arrow_data_type
-                  complex_arrow_data_type(mapping, arrow_data_type)
-                else
-                  arrow_data_type
-                end
+
+              column_definition = {
+                type: mapping['arrow_data_type'] || :string,
+                options: mapping['arrow_data_type_options']&.symbolize_keys!
+              }
+              add_or_compare_column_definition(klass, field, column_definition)
             end
           end
         end
-
-        field_types
       end
 
-      def complex_arrow_data_type(mapping, arrow_data_type)
-        mapping.fetch('arrow_data_type_options').merge(data_type: arrow_data_type).symbolize_keys
+      def add_or_compare_column_definition(klass, field, definition)
+        if @arrow_column_types[klass].include?(field)
+          # Check definitions are the same
+          if @arrow_column_types[klass][field] != definition
+            raise "Different Arrow column type definitions for #{field}"
+          end
+        else
+          @arrow_column_types[klass][field] = definition
+        end
       end
 
-      def rawtext_names(table)
-        names = {}
+      def capture_all_rawtext_names(table)
+        each_masked_mapping(table) do |klass, columns|
+          @rawtext_column_names[klass] ||= Set.new
 
-        masked_mappings = table.send(:masked_mappings)
-        masked_mappings.each do |instance, columns|
-          klass = instance.split('#').first
-
-          names[klass] ||= []
           columns.each do |column|
             rawtext_column_name = column[NdrImport::Mapper::Strings::RAWTEXT_NAME] ||
                                   column[NdrImport::Mapper::Strings::COLUMN]
 
             next if rawtext_column_name.nil?
 
-            names[klass] << rawtext_column_name.downcase
+            @rawtext_column_names[klass] << rawtext_column_name.downcase
           end
         end
-
-        names
       end
   end
 end

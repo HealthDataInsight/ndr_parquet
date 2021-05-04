@@ -14,7 +14,7 @@ class GeneratorTest < Minitest::Test
   end
 
   def test_the_output_schemas
-    generate_parquet
+    generate_parquet('ABC_Collection-June-2020_03.xlsm', 'national_collection.yml')
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
     expected_schema = [
@@ -78,7 +78,7 @@ class GeneratorTest < Minitest::Test
   end
 
   def test_complex_data_types
-    generate_parquet
+    generate_parquet('ABC_Collection-June-2020_03.xlsm', 'national_collection.yml')
 
     table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.mapped.parquet')
     raw_table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.raw.parquet')
@@ -92,12 +92,43 @@ class GeneratorTest < Minitest::Test
     assert_equal '14a,14b,14c', raw_table.find_column('squ03_6_2_2:n').first
   end
 
+  def test_cross_worksheet_klass
+    generate_parquet('cross_worksheet_spreadsheet.xlsx', 'cross_worksheet_mapping.yml')
+
+    table = Arrow::Table.load('cross_worksheet_spreadsheet.hash.mapped.parquet')
+    expected_schema = [
+      %w[COMMON1 utf8],
+      %w[COMMON2 utf8],
+      %w[FIRST utf8],
+      %w[SECOND utf8],
+      %w[THIRD utf8]
+    ]
+    actual_schema = table.schema.fields.map { |f| [f.name, f.data_type.name] }
+    assert_equal expected_schema, actual_schema
+    assert_equal 7, table.columns.first.length
+
+    raw_table = Arrow::Table.load('cross_worksheet_spreadsheet.hash.raw.parquet')
+    expected_schema = [
+      %w[common1 utf8],
+      %w[common2 utf8],
+      %w[sheet1_first utf8],
+      %w[sheet1_second utf8],
+      %w[sheet2_third utf8]
+    ]
+    actual_schema = raw_table.schema.fields.map { |f| [f.name, f.data_type.name] }
+    assert_equal expected_schema, actual_schema
+    assert_equal %w[Sheet1_2A_Common Sheet1_2A_Common Sheet1_3A_Common Sheet1_3A_Common
+                    Sheet2_2A_Common Sheet2_3A_Common Sheet2_4A_Common],
+                 raw_table.columns.first.data.to_a
+    assert_equal [nil, nil, nil, nil, 'Sheet2_2C_Third', 'Sheet2_3C_Third', 'Sheet2_4C_Third'],
+                 raw_table.columns.last.data.to_a
+  end
+
   private
 
-    def generate_parquet
-      source_file    = @permanent_test_files.join('ABC_Collection-June-2020_03.xlsm')
-      table_mappings = @permanent_test_files.join('national_collection.yml')
-      generator      = NdrParquet::Generator.new(source_file, table_mappings)
+    def generate_parquet(source_file, table_mappings)
+      generator = NdrParquet::Generator.new(@permanent_test_files.join(source_file),
+                                            @permanent_test_files.join(table_mappings))
       generator.load
     end
 end

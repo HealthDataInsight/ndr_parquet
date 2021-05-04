@@ -41,17 +41,17 @@ class TypeCastingTest < Minitest::Test
   end
 
   def test_casting_to_list
-    list_options = { split: ';', data_type: :list }
-    assert_equal %w[1 2 3], NdrParquet::TypeCasting.cast_to_arrow_datatype('1;2;3', list_options)
-    assert_empty NdrParquet::TypeCasting.cast_to_arrow_datatype('', list_options)
-    assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, list_options)
+    list_options = { split: ';' }
+    assert_equal %w[1 2 3], NdrParquet::TypeCasting.cast_to_arrow_datatype('1;2;3', :list, list_options)
+    assert_empty NdrParquet::TypeCasting.cast_to_arrow_datatype('', :list, list_options)
+    assert_nil NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :list, list_options)
   end
 
   def test_casting_to_decimal
-    decimal_options = { precision: 3, scale: 1, data_type: :decimal256 }
-    assert_kind_of BigDecimal, NdrParquet::TypeCasting.cast_to_arrow_datatype('110.2', decimal_options)
-    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype('', decimal_options)
-    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, decimal_options)
+    decimal_options = { precision: 3, scale: 1 }
+    assert_kind_of BigDecimal, NdrParquet::TypeCasting.cast_to_arrow_datatype('110.2', :decimal256, decimal_options)
+    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype('', :decimal256, decimal_options)
+    assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, :decimal256, decimal_options)
   end
 
   def test_casting_to_unknown_type

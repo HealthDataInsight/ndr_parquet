@@ -16,52 +16,63 @@ module NdrParquet
           @output_path.join("#{basename}.#{klass.underscore}.#{type}.parquet")
         end
 
-        def arrow_schemas(table)
-          schemas = {}
+        def mapped_arrow_schema(klass)
+          Arrow::Schema.new(
+            @arrow_column_types[klass].to_a.map do |fieldname, definition|
+              type = definition[:type]
+              options = definition[:options]
 
-          arrow_field_types(table).each do |klass, field_type_hash|
-            field_array = field_type_hash.map do |fieldname, type|
-              if TypeCasting.list_data_type?(type)
-                list_field_type = type.except(:data_type, :split)
+              case type
+              when :list
+                list_field_type = options.except(:split)
                 Arrow::Field.new(name: fieldname, type: :list, field: list_field_type)
-              elsif TypeCasting.decimal_data_type?(type)
-                Arrow::Field.new(name: fieldname, type: type[:data_type], **type.except(:data_type))
+              when :decimal128, :decimal256
+                Arrow::Field.new(name: fieldname, type: type, **options)
               else
                 Arrow::Field.new(fieldname, type)
               end
             end
-            schemas[klass] = Arrow::Schema.new(field_array)
-          end
-
-          schemas
+          )
         end
 
-        def save_mapped_parquet_files(output_rows, table)
-          schemas = arrow_schemas(table)
-
-          output_rows.each do |klass, records|
+        def save_mapped_parquet_files(klass_mapped_hashes)
+          klass_mapped_hashes.each do |klass, mapped_hashes|
             # Save the mapped parquet file
-            arrow_table = Arrow::Table.new(schemas[klass], records)
+            schema = mapped_arrow_schema(klass)
+            rows = mapped_hashes.map do |mapped_hash|
+              @arrow_column_types[klass].to_a.map do |fieldname, definition|
+                # Convert the fields to an Arrow table "row", with appropriate casting.
+                # Unfortunately, Arrow can't do it implicitly.
+                value = mapped_hash[fieldname]
+                TypeCasting.cast_to_arrow_datatype(value, definition[:type], definition[:options])
+              end
+            end
 
+            arrow_table = Arrow::Table.new(schema, rows)
             output_filename = parquet_filename(klass, :mapped)
             arrow_table.save(output_filename)
+
             @output_files ||= []
             @output_files << output_filename
           end
         end
 
-        def save_raw_parquet_files(rawtext_rows, rawtext_column_names)
-          rawtext_rows.each do |klass, _records|
+        def save_raw_parquet_files(klass_rawtext_hashes)
+          klass_rawtext_hashes.each do |klass, rawtext_hashes|
             # Save the rawtext parquet file
-            raw_schema = Arrow::Schema.new(
-              rawtext_column_names[klass].map do |fieldname|
+            schema = Arrow::Schema.new(
+              @rawtext_column_names[klass].to_a.map do |fieldname|
                 Arrow::Field.new(fieldname, :string)
               end
             )
-            raw_arrow_table = Arrow::Table.new(raw_schema, rawtext_rows[klass])
+            rows = rawtext_hashes.map do |rawtext_hash|
+              @rawtext_column_names[klass].to_a.map { |fieldname| rawtext_hash[fieldname] }
+            end
 
+            raw_arrow_table = Arrow::Table.new(schema, rows)
             output_filename = parquet_filename(klass, :raw)
             raw_arrow_table.save(output_filename)
+
             @output_files ||= []
             @output_files << output_filename
           end
