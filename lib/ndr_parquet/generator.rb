@@ -24,7 +24,6 @@ module NdrParquet
     end
 
     def load
-      record_count = 0
       mapped_hashes = {}
       rawtext_hashes = {}
 
@@ -32,17 +31,14 @@ module NdrParquet
         capture_all_rawtext_names(table)
         capture_all_arrow_column_types(table)
 
-        table.transform(rows).each_slice(50) do |records|
-          records.each do |(instance, fields, _index)|
-            klass = instance.split('#').first
+        table.transform(rows).each do |instance, fields, _index|
+          klass = instance.split('#').first
 
-            mapped_hashes[klass] ||= []
-            mapped_hashes[klass] << fields.except(:rawtext)
+          mapped_hashes[klass] ||= []
+          mapped_hashes[klass] << fields.except(:rawtext)
 
-            rawtext_hashes[klass] ||= []
-            rawtext_hashes[klass] << fields[:rawtext]
-          end
-          record_count += records.count
+          rawtext_hashes[klass] ||= []
+          rawtext_hashes[klass] << fields[:rawtext]
         end
       end
 
