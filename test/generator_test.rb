@@ -95,6 +95,18 @@ class GeneratorTest < Minitest::Test
   def test_cross_worksheet_klass
     generate_parquet('cross_worksheet_spreadsheet.xlsx', 'cross_worksheet_mapping.yml')
 
+    table = Arrow::Table.load('cross_worksheet_spreadsheet.hash.mapped.parquet')
+    expected_schema = [
+      %w[COMMON1 utf8],
+      %w[COMMON2 utf8],
+      %w[FIRST utf8],
+      %w[SECOND utf8],
+      %w[THIRD utf8]
+    ]
+    actual_schema = table.schema.fields.map { |f| [f.name, f.data_type.name] }
+    assert_equal expected_schema, actual_schema
+    assert_equal 7, table.columns.first.length
+
     raw_table = Arrow::Table.load('cross_worksheet_spreadsheet.hash.raw.parquet')
     expected_schema = [
       %w[common1 utf8],
