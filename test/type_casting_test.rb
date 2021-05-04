@@ -49,7 +49,7 @@ class TypeCastingTest < Minitest::Test
 
   def test_casting_to_decimal
     decimal_options = { precision: 3, scale: 1, data_type: :decimal256 }
-    assert NdrParquet::TypeCasting.cast_to_arrow_datatype('110.2', decimal_options).is_a? BigDecimal
+    assert_kind_of BigDecimal, NdrParquet::TypeCasting.cast_to_arrow_datatype('110.2', decimal_options)
     assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype('', decimal_options)
     assert_nil  NdrParquet::TypeCasting.cast_to_arrow_datatype(nil, decimal_options)
   end

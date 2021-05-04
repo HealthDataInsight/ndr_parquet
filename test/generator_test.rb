@@ -84,7 +84,7 @@ class GeneratorTest < Minitest::Test
     raw_table = Arrow::Table.load('ABC_Collection-June-2020_03.hash.raw.parquet')
 
     # :decimal256 data type
-    assert table.find_column('SQU03_6_2_1').first.is_a? BigDecimal
+    assert_kind_of BigDecimal, table.find_column('SQU03_6_2_1').first
     assert_equal '13.2134', raw_table.find_column('squ03_6_2_1:n').first
 
     # :list data type
