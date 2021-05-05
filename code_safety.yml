@@ -6,12 +6,12 @@ file safety:
     safe_revision: 88c0a2393107970d4f9101d4a715270999c7336f
   ".github/workflows/test.yml":
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: 88c0a2393107970d4f9101d4a715270999c7336f
   ".gitignore":
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: df203c02ad806b1f535777bd48e8e45945e8aa86
   ".rubocop.yml":
     comments: 
     reviewed_by: timgentry
@@ -50,52 +50,52 @@ file safety:
     safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
   bin/setup:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: 8b67798a9e249ddd5849b15a06cb252d06174598
   lib/ndr_parquet.rb:
     comments: 
     reviewed_by: timgentry
     safe_revision: ac7bf809cc6636e1a541c3ac5cdbe6dcc5a542aa
   lib/ndr_parquet/generator.rb:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
   lib/ndr_parquet/generator/parquet_file_helper.rb:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: de207ed4fcad4814375e44d3e9d14d0afe828d43
   lib/ndr_parquet/s3_wrapper.rb:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: d932ea78c23381cd3de71b031f2bc6a94e605f94
   lib/ndr_parquet/type_casting.rb:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: ae3cbfd80c764f7395071af0e1d1e4d07d3aa36e
   lib/ndr_parquet/version.rb:
     comments: 
     reviewed_by: timgentry
     safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
   ndr_parquet.gemspec:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: ba745f339bf18e4c1d796000d6061fa20ecf988a
   test/generator_test.rb:
     comments: 
     reviewed_by: timgentry
     safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
   test/resources/ABC_Collection-June-2020_03.xlsm:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: 24809b3bef5e6090640ccac15a710008219fcf4b
   test/resources/cross_worksheet_mapping.yml:
     comments: 
     reviewed_by: timgentry
     safe_revision: e7d3056fe0f04470a2c8b25d9d3228fa510a6608
   test/resources/cross_worksheet_spreadsheet.xlsx:
     comments: 
-    reviewed_by: 
-    safe_revision: 
+    reviewed_by: ollietulloch
+    safe_revision: e7d3056fe0f04470a2c8b25d9d3228fa510a6608
   test/resources/filesystem_paths.yml:
     comments: 
     reviewed_by: timgentry
