@@ -23,7 +23,7 @@ file safety:
   CHANGELOG.md:
     comments: 
     reviewed_by: timgentry
-    safe_revision: d6e3c3c157edb551fc3849f1ee8c7a9a2948a12b
+    safe_revision: 4d1fa6eab72f7a07574fff4a918fa605ade6fdd4
   CODE_OF_CONDUCT.md:
     comments: 
     reviewed_by: timgentry
@@ -75,7 +75,7 @@ file safety:
   lib/ndr_parquet/version.rb:
     comments: 
     reviewed_by: timgentry
-    safe_revision: 90b53dbbb850f2298563f3c0c6c39fd9ff3acb23
+    safe_revision: 4d1fa6eab72f7a07574fff4a918fa605ade6fdd4
   ndr_parquet.gemspec:
     comments: 
     reviewed_by: ollietulloch
