@@ -38,13 +38,6 @@ module NdrParquet
         etag: response.etag,
         success: !response.etag.nil?
       }
-    rescue StandardError => e
-      {
-        bucket: bucket,
-        key: key,
-        message: e.message,
-        success: false
-      }
     end
 
     private
