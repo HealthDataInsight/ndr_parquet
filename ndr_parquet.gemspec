@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'ndr_import'
   spec.add_dependency 'rake' # rake is an uncaptured red-parquet dependency
-  spec.add_dependency 'red-parquet', '~> 3.0'
+  spec.add_dependency 'red-parquet', '~> 4.0'
 end
