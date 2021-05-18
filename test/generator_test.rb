@@ -21,7 +21,9 @@ class GeneratorTest < Minitest::Test
       %w[providercode utf8],
       %w[SQU03_5_3_1 int32],
       %w[SQU03_5_3_2 int32],
-      %w[SQU03_6_2_1 decimal],
+      # SQU03_6_2_1 is defined as decimal256, but a precision <= 38 fits within
+      # decimal128, so Arrow makes it smaller.
+      %w[SQU03_6_2_1 decimal128],
       %w[SQU03_6_2_2 list],
       %w[K1N bool],
       %w[K1M date32],
