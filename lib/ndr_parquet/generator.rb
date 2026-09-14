@@ -15,7 +15,7 @@ module NdrParquet
 
     def initialize(filename, table_mappings, output_path = '')
       @filename = filename
-      @table_mappings = YAML.load_file table_mappings
+      @table_mappings = YAML.load_file(table_mappings, permitted_classes: [NdrImport::Table, Regexp, Symbol])
       @output_path = Pathname.new(output_path)
       @rawtext_column_names = {}
       @arrow_column_types = {}
