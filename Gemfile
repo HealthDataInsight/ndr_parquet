@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'ndr_import', git: 'https://github.com/NHSDigital/ndr_import.git',
-                  branch: 'timgentry/apply-filename-column-patch'
+                  branch: 'main'
 
 # Specify your gem's dependencies in ndr_parquet.gemspec
 gemspec
