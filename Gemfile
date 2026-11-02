@@ -2,8 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'ndr_import', git: 'https://github.com/NHSDigital/ndr_import.git',
-                  branch: 'main'
+gem 'ndr_import', '~> 11.7'
 
 # Specify your gem's dependencies in ndr_parquet.gemspec
 gemspec
