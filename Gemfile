@@ -2,12 +2,12 @@
 
 source 'https://rubygems.org'
 
-gem 'ndr_import', git: 'https://github.com/timgentry/ndr_import.git',
-                  branch: 'feature/filename_column'
+gem 'ndr_import', '~> 11.7'
 
 # Specify your gem's dependencies in ndr_parquet.gemspec
 gemspec
 
+gem 'activesupport', '>= 8.1.2.1'
 gem 'minitest', '~> 5.0'
 gem 'ndr_dev_support', '>= 3.1.3'
 gem 'rake', '~> 13.0'
